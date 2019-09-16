@@ -56,10 +56,12 @@ typedef msr::airlib_rpclib::RpcLibAdapatorsBase RpcLibAdapatorsBase;
 RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port)
     : api_provider_(api_provider)
 {
+
     if (server_address == "")
         pimpl_.reset(new impl(port));
     else
         pimpl_.reset(new impl(server_address, port));
+
     pimpl_->server.bind("ping", [&]() -> bool { return true; });
     pimpl_->server.bind("getServerVersion", []() -> int {
         return 1;
@@ -122,6 +124,11 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     pimpl_->server.bind("simGetVehiclePose", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::Pose {
         const auto& pose = getVehicleSimApi(vehicle_name)->getPose();
         return RpcLibAdapatorsBase::Pose(pose);
+    });
+
+    pimpl_->server.
+        bind("simGetLidarSegmentation", [&](const std::string& lidar_name, const std::string& vehicle_name) -> std::vector<int> {
+        return getVehicleApi(vehicle_name)->getLidarSegmentation(lidar_name);
     });
 
     pimpl_->server.
