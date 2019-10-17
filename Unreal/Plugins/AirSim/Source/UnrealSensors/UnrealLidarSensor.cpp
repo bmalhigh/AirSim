@@ -42,7 +42,7 @@ void UnrealLidarSensor::createLasers()
 
 // returns a point-cloud for the tick
 void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const msr::airlib::Pose& vehicle_pose,
-    const msr::airlib::TTimeDelta delta_time, msr::airlib::vector<msr::airlib::real_T>& point_cloud, vector<int>& segmentation_cloud)
+    const msr::airlib::TTimeDelta delta_time, msr::airlib::vector<msr::airlib::real_T>& point_cloud, msr::airlib::vector<int>& segmentation_cloud)
 {
     point_cloud.clear();
     segmentation_cloud.clear();
@@ -113,7 +113,7 @@ bool UnrealLidarSensor::shootLaser(const msr::airlib::Pose& lidar_pose, const ms
     const msr::airlib::LidarSimpleParams params, Vector3r &point, int &segmentationID)
 {
     // start position
-    Vector3r start = lidar_pose.position + vehicle_pose.position;
+    Vector3r start = VectorMath::add(lidar_pose, vehicle_pose).position;
 
     // We need to compose rotations here rather than rotate a vector by a quaternion
     // Hence using coordOrientationAdd(..) rather than rotateQuaternion(..)
